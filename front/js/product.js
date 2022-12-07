@@ -1,48 +1,99 @@
+let params = new URLSearchParams(window.location.search)
+let getUrlId = params.get("id")
 
+let kanap = [] ;
 
-let params =  new URLSearchParams(window.location.search)
-let getUrlId =  params.get("id")
-console.log('getUrlId =>', getUrlId)
-
-// const getURl = new URL(window.location.href)
-// const getUrlId =  this.currentUrl.searchParams.get("id")
-// console.log(getUrlId);
-
-
-
-
-let itemImg = document.querySelector(".item__img")
-let itemTitle = document.querySelector("#title")
-let itemPrice = document.querySelector("#price")
-let itemDescription = document.querySelector("#description")
-let colorOptions = document.querySelector("#colors")
-
-
-
-  fetch(` http://localhost:3000/api/products/${getUrlId}`)
- 
-  .then((res)=>res.json())
-  .then((kanapdata) => {
-    
-    
-    itemImg.innerHTML +=`<img src=${kanapdata.imageUrl} alt="Photographie d'un canapé">`  ;
-    itemTitle.innerHTML += `
-      <h1 id="title">${kanapdata.name}</h1>
-      `;
-    itemPrice.innerHTML += `${kanapdata.price}` ;
-    itemDescription.innerHTML +=` ${kanapdata.description}`;
-    colorOptions.innerHTML += `<option value="vert">vert</option>
-    <option value="silver">silver</option>`;
-
-    // for(let color of kanapdata.colors){
-    //   const kanapColor = document.querySelector("#colors")
-    //   kanapColor.value = color
-    //   kanapColor.innerHTML = color
-    //   console.log(color);
-    // }
-    
-   
-
-    
+// const fetchUrl = async () => {
+  
+// }
+ async function fetchUrl(){
+  console.log("hei");
+   await fetch(`http://localhost:3000/api/products/${getUrlId}`)
+  .then((resp)=> resp.json())
+  .then((promise)=>{
+    kanap = promise
+    console.log(kanap);
   })
-  .catch((error)=> Error)
+}
+
+const itemImg = document.querySelector('.item__img') 
+const itemTitle = document.querySelector('#title') 
+const itemPrice = document.querySelector('#price') 
+const itemDescription = document.querySelector('#description') 
+const selectColor = document.querySelector('#colors')
+
+
+function productDisplay(){
+   fetchUrl();
+
+  let imgKanap = document.createElement('img')
+  itemImg.appendChild(imgKanap)
+  // imgKanap.src = `${kanap.imageUrl}`;
+  imgKanap.src = kanap.imageUrl
+  imgKanap.alt = kanap.altTxt
+  console.log(imgKanap);
+
+  console.log(imgKanap);
+  
+
+  let kanapTitle = document.createElement('h1')
+  itemTitle.append(kanapTitle)
+  console.log(kanapTitle);
+  kanapTitle.innerText = kanap.name
+
+
+  // itemImg.innerHTML += `<img src=${kanap.imageUrl} alt=${kanap.altTxt}>`
+  // itemTitle.innerHTML += `${kanap.name}`
+  // itemPrice.innerHTML += `${kanap.price}`
+  // itemDescription.innerHTML += `${kanap.description}`
+
+  // kanap.colors.forEach((kanapCOlor) => {
+  //   let tagOption = document.createElement('option')
+
+  //   tagOption.innerHTML= `${kanapCOlor}`
+  //   tagOption.value= `${kanapCOlor}`
+
+  //   selectColor.appendChild(tagOption)
+  //   console.log(kanapCOlor);
+    
+  };
+// }
+productDisplay();
+
+const addToCart = document.querySelector('#addToCart')
+
+const addBasket  = () => {
+
+  addToCart.addEventListener('click', () => {
+    let basket = JSON.parse(localStorage.getItem("canapé"))
+    let selectColor = document.querySelector('#colors')
+
+    console.log(basket);
+    console.log(selectColor);
+
+    const quantity = document.querySelector('#quantity')
+    const productChoice = {
+      color : selectColor.value,
+      quantity :  parseInt(quantity.value) , 
+      _id : kanap._id
+    }
+
+    if(!checkColor(selectColor.value) ){
+       alert('Veuillez choisir une couleur')
+         return
+    } 
+if(!checkQuantity(quantity.value)){
+  alert('Veuiller saisir une quntité entre 1 et 100')
+    return
+}
+    if(basket == null ){
+      basket = [];
+      basket.push(productChoice)
+      localStorage.setItem("canapé", JSON.stringify(basket))
+      console.log(basket);
+
+    }
+
+  })
+}
+addBasket()
